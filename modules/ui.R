@@ -2,6 +2,9 @@
 # USER INTERFACE SHINY APP -------------------------------------
 # --------------------------------------------------------------
 
+# if an error occurs, show the same error message every time
+options(shiny.sanitize.errors = TRUE)
+
 ui <- fluidPage(
   
   # Enter the title of the program
@@ -43,17 +46,45 @@ ui <- fluidPage(
                               choices=list("line", "candlesticks", "matchsticks", "bars")),
                   br(), # ads a break to increase clarity
                   
+                  ## Checkboxes for technical indicators
+                  h4(strong("4) Analyze your Security")),
+                  checkboxGroupInput(inputId = "TA_check",
+                                     label=h5("Select technical indicators to analyze the security:"),
+                                     choices=list(
+                                       "Exponential Moving Average"="addEMA()",
+                                       "Simple Moving Average"="addSMA()",
+                                       "Moving Average Convergence Divergence"="addMACD()",
+                                       "Bollinger Bands"="addBBands()",
+                                       "Relative Strength Index"="addRSI()",
+                                       "Stochastic Momentum Indicator"="addSMI()")),
+                  br(), # ads a break to increase clarity
+                  
+                  ## Dropdown to select trading strategy
+                  h4(strong("5) Backtest a Trading Strategy")),
+                  selectInput(inputId = "strategy",
+                              label = h5("Select your strategy:"),
+                              choices = list(
+                                "Strategy 1: Simple Filter Buy" = "strategy1",
+                                "Strategy 2: Simple Filter Buy & Sell" = "strategy2"
+                              )),
+                  
                   submitButton("Submit"),
                   br(), # ads a break to increase clarity
                   
+                  ## Inform the user about potential causes of errors
+                  helpText(strong("Note:"), "If an error occurs, please verify that the ticker you've entered is valid
+               and that the chosen trading strategy is applicable for the specified period."),
                   
                 ), # sidebar panel closing bracket
                 
                 ### In the main panel, the charts will be displayed ###
                 mainPanel(
                   
-                  plotOutput("ticker"), # visualizes the performance of the stock
+                  plotOutput("ticker"), # Chart 1: visualizes the performance of the stock including the selected technical indicators
                   br(), # ads a break to increase clarity
+                  htmlOutput("strategydescriptions"), # Describes the different strategies
+                  plotOutput("strategyplots") # Chart 2: visualizes the cumulative return, the daily return and drawdown of the trading strategy
+                  
                   
                 ) # main panel closing bracket
   ) # sidebar layout closing bracket
