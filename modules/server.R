@@ -1,5 +1,5 @@
 # --------------------------------------------------------------
-# SERVER FUNCTION  ---------------------------------------------
+# SERVER FUNCTION SHINY APP ------------------------------------
 # --------------------------------------------------------------
 
 server <- function(input, output){
@@ -49,6 +49,25 @@ server <- function(input, output){
              and x is the threshold. For this strategy, a threshold of 0.1% has been chosen.")
     }
     
+    else if (input$strategy == "strategy3"){ # displays description for strategy 3
+      paste ("<b>Description Strategy 3:</b> The Simple Filter Buy & RSI Sell strategy creates a buy signal
+             when the price of a security increases compared to yesterday's price. The buy signal is Pt / Pt-1 > 1 + x,
+             where Pt is the closing price at time t and x > 0 is the threshold. For this strategy,
+             a threshold of 0.1% has been chosen. The sell signal arises when RSI > 70.")
+    }
+    
+    else if (input$strategy == "strategy4"){ # displays description for strategy 4
+      paste ("<b>Description Strategy 4:</b> The RSI Buy & Sell strategy creates a buy signal if RSI < 30 and
+             a sell signal if RSI > 70. Note that the programme will display an error message if the RSI of the 
+             selected stock in the specified date range was never below 30 (more likely for shorter periods).")
+    }
+    
+    else if (input$strategy == "strategy5"){ # displays description for strategy 5
+      paste ("<b>Description Strategy 5:</b> The EMA Buy & RSI Sell strategy creates a buy signal when the short-term
+             EMA (10 days) crosses above the long-term EMA (50 days). The sell signal is generated when RSI > 70.
+             Note that the programme will display an error message if the short-term EMA never crosses the long-term EMA
+             of the selected stock in the specified date range (more likely for shorter periods).")
+    }
     
   }) # closing brackets render Text
   
@@ -135,7 +154,164 @@ server <- function(input, output){
       charts.PerformanceSummary(ret2, main="Strategy 2: Simple Filter Buy & Sell", colorset = redmono)
       
     }
-   
+    
+    # Define third strategy 
+    if (input$strategy == "strategy3"){
+      
+      ################################################
+      ### Strategy 3: Simple Filter Buy & RSI Sell ###
+      ################################################
+      # EXPLANATION:
+      # Buy Signal: (Pt / Pt-1 > 1 + x) &
+      # where Pt is the closing price at time t, 
+      # and x > 0 is the threshold
+      # Sell Signal: RSI > 70
+      
+      n <- 14 # period for RSI
+      delta <-0.003 # threshold (0.3%)
+      price <- Cl(data) # closing prices         
+      r <- price/Lag(price) - 1 # % price change
+      rsi <- RSI(price, n) # n-period RSI
+      signal <-c()    # first signal is NA
+      signal[1:n] <- 0
+      
+      
+      # Generate Trading Signal
+      for (i in (n+1):length(price)){
+        if (r[i] > delta){
+          signal[i]<- 1
+        } else if (rsi[i] > 70){
+          signal[i]<- -1
+        } else
+          signal[i]<- 0
+      }
+      
+      # Assign time to action variable using reclass;
+      signal<-reclass(signal,price)
+      
+      # Apply Trading Rule
+      trade3 <- Lag(signal)
+      ret3 <- dailyReturn(data)*trade3 
+      
+      charts.PerformanceSummary(
+        ret3, main="Strategy 3: Simple Filter Buy & RSI Sell", colorset = redmono)
+      
+    }
+    
+    # Strategy 4 
+    if (input$strategy == "strategy4"){
+      
+      ####################################
+      ### Strategy 4: RSI Buy & Sell #####
+      ####################################
+      # EXPLANATION:
+      # Buy Signal: RSI < 30
+      # Sell Signal: RSI > 70
+      
+      qty <- 300 #buy 300 units when buy signal is triggered
+      day <- 14 # sell signal if 14-day RSI > 70
+      
+      signal <- c()   #trade signal
+      signal[1:(day+1)] <- 0 
+      
+      price <- Cl(data)
+      
+      stock <- c()  #stock holding
+      stock[1:(day+1)] <-0
+      
+      cash <-c()
+      cash[1:(day+1)] <- 10000 #initial wealth 10'000
+      
+      # Trading signal is based on simple RSI:
+      rsi <- RSI(price, day)  #rsi is the lag of RSI
+      for (i in (day+1): length(price)){
+        if (rsi[i] < 30){  #buy if rsi < 30
+          signal[i] <- 1
+        } else if (rsi[i] < 70){ #no change if 30 <= RSI <= 70
+          signal[i] <- 0
+        } else {         #sell  if rsi > 70
+          signal[i] <- -1
+        }
+      }
+      signal<-reclass(signal,price)
+      
+      # Assume buying at closing price. We keep track of how cash and stock changes:
+      trade <- Lag(signal)    #rsi is the lag of RSI
+      for (i in (day+1): length(price)){
+        if (trade[i]>=0){
+          stock[i] <- stock[i-1] + qty*trade[i]
+          cash[i] <- cash[i-1] - 
+            qty*trade[i]*price[i]
+        } else{
+          stock[i] <- 0
+          cash[i] <- cash[i-1] + 
+            stock[i-1]*price[i]
+        }
+      }
+      stock<-reclass(stock,price)
+      cash<-reclass(cash,price)
+      
+      # To evaluate performance, we calculate equity using cash and stock holdings:
+      equity <-c()
+      equity[1:(day+1)] <- 10000 
+      
+      return<-c()                  
+      return[1:(day+1)] <- 0
+      
+      for (i in (day+1): length(price)){
+        equity[i] <- stock[i] * price[i] + cash[i]
+        return[i] <- equity[i]/equity[i-1]-1
+      }
+      equity <-reclass(equity,price)
+      ret4 <-reclass(return,price)
+      
+      # Plotting the strategy
+      charts.PerformanceSummary(ret4, 
+                                main = "Strategy 4: RSI Buy & Sell", colorset = redmono)
+      
+    }
+    
+    # Strategy 5 
+    if (input$strategy == "strategy5"){
+      
+      ######################################
+      ### Strategy 5: EMA Buy & RSI Sell ###
+      ######################################
+      # EXPLANATION:
+      # Buy signal based on EMA
+      # Sell signal based on RSI
+      
+      n <- 14 # period for RSI
+      delta <- 0.005
+      price <- Cl(data)
+      S <- 10 # period for short term EMA
+      L <- 50 # period for long term EMA
+      r <- EMA(price, S) / EMA(price, L) - 1  
+      rsi <- RSI(price, n) 
+      signal <-c()    # first signal is NA
+      signal[1:L] <-0
+      
+      
+      # Generate Trading Signal
+      for (i in (L+1):length(price)){
+        if (r[i] > delta){ # buy if short-term EMA crosses above long-term EMA
+          signal[i]<- 1
+        } else if (rsi[i] > 70){ # sell if RSI > 70
+          signal[i]<- -1
+        } else
+          signal[i]<- 0
+      }
+      signal <- reclass(signal,price)
+      
+      ## Apply Trading Rule
+      trade5 <- Lag(signal)
+      ret5 <- dailyReturn(data)*trade5 
+      
+      charts.PerformanceSummary(
+        ret5, main="Strategy 5: EMA Buy & RSI Sell", colorset = redmono)
+      
+    } # closing bracket strategy 5
+    
   }) # closing brackets renderPlot output$strategyplots
   
 } # closing bracket server function
