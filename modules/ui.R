@@ -18,7 +18,9 @@ ui <- fluidPage(
                   
                   ## General Information about the program
                   h3(strong("Instructions")),
-                  helpText("Placeholder for an adequate program description"),
+                  helpText("This program allows you to analyze a financial security with various technical indicators
+               and backtest different trading strategies for a specified date range,
+               using data from Yahoo! Finance. Please enter the required inputs below."),
                   br(), # ads a break to increase clarity
                   
                   ## Input field to define the stock
@@ -65,7 +67,10 @@ ui <- fluidPage(
                               label = h5("Select your strategy:"),
                               choices = list(
                                 "Strategy 1: Simple Filter Buy" = "strategy1",
-                                "Strategy 2: Simple Filter Buy & Sell" = "strategy2"
+                                "Strategy 2: Simple Filter Buy & Sell" = "strategy2",
+                                "Strategy 3: Simple Filter Buy & RSI Sell" = "strategy3",
+                                "Strategy 4: RSI Buy & Sell" = "strategy4",
+                                "Strategy 5: EMA Buy & RSI Sell" = "strategy5"
                               )),
                   
                   submitButton("Submit"),
