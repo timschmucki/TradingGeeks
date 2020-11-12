@@ -42,9 +42,9 @@ def selectSaveDir(searchquery):
     """ Select saving directory based on query. """
 
     if "schweiz" in searchquery.split():
-        path = 'Data/News/NZZ/dom'
+        path = 'data/News/NZZ/dom'
     else:
-        path = 'Data/News/NZZ/for'
+        path = 'data/News/NZZ/for'
 
     return path
 
