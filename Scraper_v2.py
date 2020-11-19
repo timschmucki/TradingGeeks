@@ -21,7 +21,7 @@ def getCmdInput(argv):
         opts, args = getopt.getopt(argv, short_options, long_options)
     except getopt.GetoptError as err:
         print("Command line error: {}".format(err))
-        print('Use: Scraper.py -s <startdate %d-%m-%Y> -e <enddate %d-%m-%Y>')
+        print('Use: Python Scraper.py -s <startdate %d-%m-%Y> -e <enddate %d-%m-%Y>')
         sys.exit(2)
 
     # Define variables
@@ -30,6 +30,10 @@ def getCmdInput(argv):
             start_date = arg
         elif opt in ("-e", "--enddate"):
             end_date = arg
+
+    # convert to datetime
+    start_date = dt.datetime.strptime(start_date, "%d-%m-%Y")
+    end_date = dt.datetime.strptime(end_date, "%d-%m-%Y")
 
     return start_date, end_date
 
@@ -62,7 +66,6 @@ def convert_to_df(cursor_obj):
 
         # append to data list
         ith_tweet = [username, date, text, hashtags]
-
         data.append(ith_tweet)
 
     # convert to dataframe
@@ -70,23 +73,26 @@ def convert_to_df(cursor_obj):
 
     return df
 
-
 # %% Main
 
 def main():
     data_dir = 'data/'
     # Read command line input
     start_date, end_date = getCmdInput(sys.argv)
-    username = '@financialtimes'  # + @WSJ, @business (bloomberg), @FT
-    max_tweets = 100
 
-    api = init_api()
-    tweets = tw.Cursor(api.user_timeline, id=username).items(max_tweets)
+    usernames = ['@KOFETH', '@ecb']
+    max_tweets = 3200  # API limits max tweets per 15min is ~3200
 
+    for username in usernames:
+        print("Scraping tweets from {} ...".format(username))
+        api = init_api()
+        tweets = tw.Cursor(api.user_timeline, id=username).items(max_tweets)
 
-
-    df = convert_to_df(tweets)
-    df.to_excel('{}/tweet_df_{}.xlsx'.format(data_dir, str(dt.date.today()), index=False))
+        df = convert_to_df(tweets)  # convert to df
+        df = df[(start_date < df['date']) & (df['date'] < end_date)]  # filter by date
+        fname = '{}/tweet_df_{}_{}.xlsx'.format(data_dir, username, str(dt.date.today()))
+        df.to_excel(fname, index=False)
+        print("Scraped {} tweets. Saved as {}.".format(len(tweets), fname))
 
 
 # %% Run
