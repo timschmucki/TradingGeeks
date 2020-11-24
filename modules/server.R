@@ -4,6 +4,15 @@
 
 server <- function(input, output){
   
+  #load the python environment and the script code
+  # py_install("openpyxl")
+  # py_install("tweepy")
+  # # install r_anaconda from github
+  # remotes::install_github("hafen/rminiconda") # install.packages("remotes") # if not installed
+  
+  # reticulate::use_virtualenv('python35_env',required = TRUE) #define python version
+  reticulate::source_python('Scraper_v2.py')
+  
   
   # First, the stock data is retrieved from Yahoo based on the user input and stored in reactive
   yahoo_data <- reactive({
@@ -328,10 +337,11 @@ server <- function(input, output){
         
       } # closing bracket strategy 5
       
-      #Twitter indicator strategy
+      # Strategy 6 Twitter indicator strategy taken from python
       if (input$strategy == "strategy6"){
         
-        print('load data from database which is build from python scipt')
+        
+        print('load data from database which is build from python scipt and construct plot')
         
         
       }
@@ -346,9 +356,19 @@ server <- function(input, output){
   observeEvent(input$twitter ,{
     showModal(modalDialog('execute the python script to update database', footer=NULL))
     
+    start_date <- format(input$dates[1], '%d-%m-%Y')
+    end_date <- format(input$dates[2], '%d-%m-%Y')
+    
+    show_modal_spinner(
+      spin = "semipolar",
+      color = "firebrick",
+      text = "Please wait! Twitter data will be fetched..."
+    )
+    
+    update_db_python(start_date, end_date)
     print('execute the python script to update database')
     
-    Sys.sleep(5)
+    # Sys.sleep(5)
     
     #Finish the function
     removeModal()
