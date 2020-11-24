@@ -11,31 +11,31 @@ from tweepy import OAuthHandler
 
 
 # %% Functions
-def getCmdInput(argv):
-    """ Parse the command line arguments. """
-    argv = argv[1:]  # remove path (arg[0])
-    # Get options and arguments from command line input
-    try:
-        short_options = "s:e:"
-        long_options = ["startdate=", "enddate="]
-        opts, args = getopt.getopt(argv, short_options, long_options)
-    except getopt.GetoptError as err:
-        print("Command line error: {}".format(err))
-        print('Use: Python Scraper.py -s <startdate %d-%m-%Y> -e <enddate %d-%m-%Y>')
-        sys.exit(2)
-
-    # Define variables
-    for opt, arg in opts:
-        if opt in ("-s", "--startdate"):
-            start_date = arg
-        elif opt in ("-e", "--enddate"):
-            end_date = arg
-
-    # convert to datetime
-    start_date = dt.datetime.strptime(start_date, "%d-%m-%Y")
-    end_date = dt.datetime.strptime(end_date, "%d-%m-%Y")
-
-    return start_date, end_date
+# def getCmdInput(argv):
+#     """ Parse the command line arguments. """
+#     argv = argv[1:]  # remove path (arg[0])
+#     # Get options and arguments from command line input
+#     try:
+#         short_options = "s:e:"
+#         long_options = ["startdate=", "enddate="]
+#         opts, args = getopt.getopt(argv, short_options, long_options)
+#     except getopt.GetoptError as err:
+#         print("Command line error: {}".format(err))
+#         print('Use: Python Scraper.py -s <startdate %d-%m-%Y> -e <enddate %d-%m-%Y>')
+#         sys.exit(2)
+# 
+#     # Define variables
+#     for opt, arg in opts:
+#         if opt in ("-s", "--startdate"):
+#             start_date = arg
+#         elif opt in ("-e", "--enddate"):
+#             end_date = arg
+# 
+#     # convert to datetime
+#     start_date = dt.datetime.strptime(start_date, "%d-%m-%Y")
+#     end_date = dt.datetime.strptime(end_date, "%d-%m-%Y")
+# 
+#     return start_date, end_date
 
 
 def init_api():
@@ -75,10 +75,10 @@ def convert_to_df(cursor_obj):
 
 # %% Main
 
-def main():
+def update_db_python(start_date, end_date):
     data_dir = 'data/'
     # Read command line input
-    start_date, end_date = getCmdInput(sys.argv)
+    # start_date, end_date = getCmdInput(sys.argv)
 
     usernames = ['@KOFETH', '@ecb']
     max_tweets = 3200  # API limits max tweets per 15min is ~3200
@@ -95,7 +95,7 @@ def main():
         print("Scraped {} tweets. Saved as {}.".format(len(tweets), fname))
 
 
-# %% Run
-
-if __name__ == "__main__":
-    main()
+# # %% Run
+# 
+# if __name__ == "__main__":
+#     main()
