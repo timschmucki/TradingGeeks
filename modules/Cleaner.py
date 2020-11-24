@@ -64,42 +64,45 @@ def get_sentiment(text_col):
     return polarity, subjectivity
 
 
-def plot_missing_values(data):
-    sns.heatmap(data.isnull(), cbar=False)
-    plt.title("Missing values in tweets data frame")
-    plt.show()
-
-
+# def plot_missing_values(data):
+#     sns.heatmap(data.isnull(), cbar=False)
+#     plt.title("Missing values in tweets data frame")
+#     plt.show()
+# 
+# 
 def plot_wordcloud(text_col):
     text = ' '.join(text_col)
     # stop_words = ["covid19", "coronavirus"]
 
-    wordcloud = WordCloud(width=2000, height=1000, collocations=False).generate(text)
+    wordcloud = WordCloud(width=2000, height=1000, collocations=False, background_color="white").generate(text)
 
     plt.figure(figsize=(18, 10))
     plt.title("Top Words")
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
-    plt.show()
-
-
-def plot_sentiment_dist(sent_col):
-    sns.distplot(sent_col)
-    plt.title("Distribution of sentiment")
-    plt.show()
+    plt.savefig('data/wordcloud.png')
+    # plt.show()
+# 
+# 
+# def plot_sentiment_dist(sent_col):
+#     sns.distplot(sent_col)
+#     plt.title("Distribution of sentiment")
+#     plt.show()
 
 def plot_sentiment_dev(sent_col, date_col):
+    plt.figure(figsize=(18, 10))
     dates = matplotlib.dates.date2num(date_col)
     matplotlib.pyplot.plot_date(dates, sent_col)
     plt.title("Sentiment Score over time")
-    plt.show()
+    plt.savefig('data/sentiment_dev.png')
+
 
 
 # %% Main
-def main():
+def clean_twitter():
     # Cleaning
     data_dir = "data/"
-    df = pd.read_excel(data_dir + 'articles_raw_gen2020-11-07.xlsx', index_col=0)
+    df = pd.read_excel(data_dir + 'twitter_data.xlsx', index_col=0)
     df['date'] = pd.to_datetime(df['date'])
 
     df['text_clean'] = clean_texts(df['text'])
@@ -107,24 +110,27 @@ def main():
 
     df = df[df['sent'] != 0]
 
-    df = df.groupby('filename').agg({'date': 'first',
-                                     'polarity': 'mean',
-                                     'sent': 'mean',
-                                     'text': lambda x: ''.join(x),
-                                     'text_clean': lambda x: ','.join(x)})
+    # df = df.groupby('filename').agg({'date': 'first',
+    #                                  'polarity': 'mean',
+    #                                  'sent': 'mean',
+    #                                  'text': lambda x: ''.join(x),
+    #                                  'text_clean': lambda x: ','.join(x)})
 
     # EDA
-    print(df.text_clean[90])
-    plot_missing_values(df)
-    pd.Series(' '.join(df['text']).split()).value_counts()[:10].plot.bar()
-    pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
+    # print(df.text_clean[90])
+
+    # plot_missing_values(df)
+    # pd.Series(' '.join(df['text']).split()).value_counts()[:10].plot.bar()
+    # pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
     plot_wordcloud(df['text_clean'])
-    plot_sentiment_dist(df['sent'])
+    
+    
+    # plot_sentiment_dist(df['sent'])
     plot_sentiment_dev(df['sent'], df['date'])
 
 
 
 
 # %% Run file
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

@@ -80,7 +80,8 @@ def update_db_python(start_date, end_date):
     # Read command line input
     # start_date, end_date = getCmdInput(sys.argv)
 
-    usernames = ['@KOFETH', '@ecb']
+    usernames = ['@KOFETH'] #, '@ecb']
+
     max_tweets = 3200  # API limits max tweets per 15min is ~3200
 
     for username in usernames:
@@ -90,9 +91,11 @@ def update_db_python(start_date, end_date):
 
         df = convert_to_df(tweets)  # convert to df
         df = df[(start_date < df['date']) & (df['date'] < end_date)]  # filter by date
-        fname = '{}/tweet_df_{}_{}.xlsx'.format(data_dir, username, str(dt.date.today()))
+        # fname = '{}/tweet_df_{}_{}.xlsx'.format(data_dir, username, str(dt.date.today()))
+        fname = 'data/twitter_data.xlsx'
         df.to_excel(fname, index=False)
-        print("Scraped {} tweets. Saved as {}.".format(len(tweets), fname))
+        # print(tweets)
+        # print("Scraped {} tweets. Saved as {}.".format(len(tweets), fname))
 
 
 # # %% Run
