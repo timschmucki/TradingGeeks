@@ -7,11 +7,21 @@ server <- function(input, output){
   #load the python environment and the script code
   # py_install("openpyxl")
   # py_install("tweepy")
+  # py_install('matplotlib')
+  # py_install('seaborn')
+  # py_install('wordcloud')
+  # py_install('textblob')
+  # py_install('xlrd')
+  # py_install('nltk')
+  
+  
   # # install r_anaconda from github
   # remotes::install_github("hafen/rminiconda") # install.packages("remotes") # if not installed
   
   # reticulate::use_virtualenv('python35_env',required = TRUE) #define python version
-  reticulate::source_python('Scraper_v2.py')
+  reticulate::source_python('modules/Scraper_v2.py')
+  reticulate::source_python('modules/Cleaner.py')
+  
   
   
   # First, the stock data is retrieved from Yahoo based on the user input and stored in reactive
@@ -40,19 +50,19 @@ server <- function(input, output){
       
       # There is a distinction between charts with technical indicators and charts without technical indicators
       if (length(input$TA_check)!=0){ # this chart will appear when the user has checked a technical indicator (input$TA_check)!=0
-        chartSeries(yahoo_data(), 
+        isolate(chartSeries(yahoo_data(), 
                     TA=paste(input$TA_check, collapse=";"), 
                     name=paste("Chart to analyze the stock:", input$ticker), 
                     type=input$chart_type, 
-                    up.col='black', dn.col='red', theme="white")
+                    up.col='black', dn.col='red', theme="white"))
       }
       
       if (length(input$TA_check)==0){ # this chart will appear when the user has NOT selected a technical indicator
-        chartSeries(yahoo_data(), 
+        isolate(chartSeries(yahoo_data(), 
                     TA=NULL, 
                     name=paste("Chart to analyze the stock:", input$ticker), 
                     type=input$chart_type, 
-                    up.col='black', dn.col='red', theme="white")
+                    up.col='black', dn.col='red', theme="white"))
       }
       
     }) # closing brackets renderPlot output$ticker
@@ -354,25 +364,46 @@ server <- function(input, output){
   
   #observe twitter button and trigger python script to execute
   observeEvent(input$twitter ,{
-    showModal(modalDialog('execute the python script to update database', footer=NULL))
-    
+
     start_date <- format(input$dates[1], '%d-%m-%Y')
     end_date <- format(input$dates[2], '%d-%m-%Y')
     
+    #show spinner modal for busy state
     show_modal_spinner(
       spin = "semipolar",
       color = "firebrick",
-      text = "Please wait! Twitter data will be fetched..."
+      text = paste("Twitter data will be fetched from ",input$dates[1],"to",input$dates[2]," ..."),
+
     )
     
+    #execute the python script Scaper
     update_db_python(start_date, end_date)
-    print('execute the python script to update database')
+
+
+    #next spinner opens indicating busy
+    show_modal_spinner(
+      spin = "semipolar",
+      color = "firebrick",
+      text = "Please wait! Analyzing Twitter data..."
+    )
+
+    # execute python scipt Cleaner
+    clean_twitter()
     
-    # Sys.sleep(5)
-    
-    #Finish the function
-    removeModal()
-    
+    # Show the modal with the plots
+    showModal(modalDialog(
+      
+      # plot the image into the modal
+      list(tags$img(width = "100%", height = "500px", align="center",src = base64enc::dataURI(file = "data/wordcloud.png", mime = "image/png")),
+           tags$img(width = "100%", height = "500px", align="center",src = base64enc::dataURI(file = "data/sentiment_dev.png", mime = "image/png"))
+           ),
+      
+      size = c("l"),
+      easyClose = TRUE,
+      footer = modalButton("Dismiss")
+    ))
+
+
   })
   
   
