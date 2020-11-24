@@ -16,12 +16,12 @@ ui <- fluidPage(
                 ### In the sidebar panel, inputs can be specified by the user ###
                 sidebarPanel(
                   
-                  ## General Information about the program
-                  h3(strong("Instructions")),
-                  helpText("This program allows you to analyze a financial security with various technical indicators
-               and backtest different trading strategies for a specified date range,
-               using data from Yahoo! Finance. Please enter the required inputs below."),
-                  br(), # ads a break to increase clarity
+               #    ## General Information about the program
+               #    h3(strong("Instructions")),
+               #    helpText("This program allows you to analyze a financial security with various technical indicators
+               # and backtest different trading strategies for a specified date range,
+               # using data from Yahoo! Finance. Please enter the required inputs below."),
+               #    br(), # ads a break to increase clarity
                   
                   ## Input field to define the stock
                   h4(strong("1) Choose a Financial Security")),
@@ -70,10 +70,22 @@ ui <- fluidPage(
                                 "Strategy 2: Simple Filter Buy & Sell" = "strategy2",
                                 "Strategy 3: Simple Filter Buy & RSI Sell" = "strategy3",
                                 "Strategy 4: RSI Buy & Sell" = "strategy4",
-                                "Strategy 5: EMA Buy & RSI Sell" = "strategy5"
+                                "Strategy 5: EMA Buy & RSI Sell" = "strategy5",
+                                "Strategy 6: Twitter Indicator" = "strategy6"
+                                
                               )),
                   
-                  submitButton("Submit"),
+                  #show Twitter button if strategy 3 is selected
+                  conditionalPanel(condition = "input.strategy == 'strategy6'",
+                                   actionButton(inputId = "twitter", label = 'Refresh Twitter Data',
+                                                style="color: #FFFFFF; background-color: #1DA1F2;",icon = icon("twitter")),
+                                   br(),
+                                   br(),
+                                   
+                  ),
+                  
+                  actionButton(inputId='submit',label="Submit", style="color: #fff; background-color: #e95420;"),
+                  
                   br(), # ads a break to increase clarity
                   
                   ## Inform the user about potential causes of errors
@@ -85,7 +97,7 @@ ui <- fluidPage(
                 ### In the main panel, the charts will be displayed ###
                 mainPanel(
                   
-                  plotOutput("ticker"), # Chart 1: visualizes the performance of the stock including the selected technical indicators
+                  shinycssloaders::withSpinner(plotOutput("ticker")), # Chart 1: visualizes the performance of the stock including the selected technical indicators
                   br(), # ads a break to increase clarity
                   htmlOutput("strategydescriptions"), # Describes the different strategies
                   plotOutput("strategyplots") # Chart 2: visualizes the cumulative return, the daily return and drawdown of the trading strategy
