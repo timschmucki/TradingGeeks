@@ -19,8 +19,8 @@ server <- function(input, output){
   # remotes::install_github("hafen/rminiconda") # install.packages("remotes") # if not installed
   
   # reticulate::use_virtualenv('python35_env',required = TRUE) #define python version
-  reticulate::source_python('modules/Scraper_v2.py')
-  reticulate::source_python('modules/Cleaner.py')
+  reticulate::source_python('modules/scraper.py')
+  reticulate::source_python('modules/cleaner.py')
   
   
   

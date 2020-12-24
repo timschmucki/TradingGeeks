@@ -94,11 +94,5 @@ def update_db_python(start_date, end_date):
         # fname = '{}/tweet_df_{}_{}.xlsx'.format(data_dir, username, str(dt.date.today()))
         fname = 'data/twitter_data.xlsx'
         df.to_excel(fname, index=False)
-        # print(tweets)
+        print(tweets)
         # print("Scraped {} tweets. Saved as {}.".format(len(tweets), fname))
-
-
-# # %% Run
-# 
-# if __name__ == "__main__":
-#     main()
