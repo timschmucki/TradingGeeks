@@ -224,6 +224,7 @@ server <- function(input, output){
         # Assign time to action variable using reclass;
         signal<-reclass(signal,price)
         
+        
         # Apply Trading Rule
         trade3 <- Lag(signal)
         ret3 <- dailyReturn(yahoo_data())*trade3 
@@ -350,6 +351,43 @@ server <- function(input, output){
       # Strategy 6 Twitter indicator strategy taken from python
       if (input$strategy == "strategy6"){
         
+        #load the signals from twitter data
+        df <- read.table('data/twitter_signals.csv', 
+                         header = TRUE,
+                         sep = ",")
+        
+        #format the date
+        df$date <- as.Date(df$date)
+        
+        #set index and remove column username
+        df <- subset(df, select = -username)
+        
+        #make distinct and only take the data with signals
+        df = distinct(df)
+        df = subset(df, signal!=0)
+        
+        
+        #take date of timeseries
+        date <- data.frame(Cl(yahoo_data()))
+        date <- data.frame(date = as.Date(row.names(date)))
+        
+        #merge the ticker date timeseries with df= signals from twitter indicator
+        df_signal = left_join(date, df, by = 'date')
+        
+        #replace all NA values with 0        
+        df_signal[is.na(df_signal)] = 0
+        
+        #set the date as index       
+        rownames(df_signal) <- df_signal$date
+        df_signal <- subset(df_signal, select = -date)
+        
+        # Apply Trading Rule
+        trade6 <- Lag(df_signal)
+        ret6 <- dailyReturn(yahoo_data())*trade6
+        
+        charts.PerformanceSummary(
+          ret6, main="Strategy 6: Twitter Indicator", colorset = redmono)
+        
         
         print('load data from database which is build from python scipt and construct plot')
         
@@ -404,7 +442,7 @@ server <- function(input, output){
     ))
 
 
-  })
+  }, ignoreInit=TRUE)
   
   
   
