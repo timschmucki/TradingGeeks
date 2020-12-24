@@ -30,7 +30,10 @@ def clean_texts(text_col):
     stop_words.update(('wwwsnbchsnbsnbchzurich', 'press', 'relationspo', 'box', 'zurichtelephone',
                        'suisse', 'swiss', 'schweizerische', 'svizzera', 'national', 'nationale', 'naziunala',
                        'nazionale', 'bank', 'banca', 'nationalbankbanque', 'pcommunicationspo', 'ch', 'suissebanca',
-                       'svizzerabanca', 'svizraswiss', 'release', 'svizrapress', 'communicationssnbchberne'))
+                       'svizzerabanca', 'svizraswiss', 'release', 'svizrapress', 'communicationssnbchberne',
+                       
+                       '@oekonomenstimme', '@ifo_Institut','ifoinstitut', '#KOFBulletin', 'kofeth', 'kofethen', 
+                       'kof', ))
 
     # clean on tweet level
     text_col = text_col.apply(lambda x: re.sub(r'', '', x))  #
@@ -53,6 +56,8 @@ def clean_texts(text_col):
 
 
 def get_sentiment(text_col):
+    date = text_col.date
+    text_col = text_col.text_clean
     start_time = time.time()
     print("Calculating sentiment of {} texts...".format(len(text_col)))
 
@@ -60,16 +65,22 @@ def get_sentiment(text_col):
     subjectivity = text_col.apply(lambda x: TextBlob(x).sentiment.subjectivity)
 
     print("Calculation finished  --- runtime {} s ---".format(int(round(time.time() - start_time, 0))))
+    
+    #save trading signals with rule based on sentiment scores
+    trading_signals = pd.concat([date, polarity], axis=1)
+    
+    conditions = [(trading_signals['text_clean']>=0.5),  #buy signal
+                  (trading_signals['text_clean']<=-0.5)] #sell signal
+    values = [1,-1]
+    
+    trading_signals['signal'] = np.select(conditions, values) #new dataframe with buy and sell signals
+    trading_signals[['date','signal']].to_csv('data/twitter_signals.csv')
+
 
     return polarity, subjectivity
 
 
-# def plot_missing_values(data):
-#     sns.heatmap(data.isnull(), cbar=False)
-#     plt.title("Missing values in tweets data frame")
-#     plt.show()
-# 
-# 
+
 def plot_wordcloud(text_col):
     text = ' '.join(text_col)
     # stop_words = ["covid19", "coronavirus"]
@@ -81,9 +92,7 @@ def plot_wordcloud(text_col):
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
     plt.savefig('data/wordcloud.png')
-    # plt.show()
-# 
-# 
+
 # def plot_sentiment_dist(sent_col):
 #     sns.distplot(sent_col)
 #     plt.title("Distribution of sentiment")
@@ -94,6 +103,13 @@ def plot_sentiment_dev(sent_col, date_col):
     dates = matplotlib.dates.date2num(date_col)
     matplotlib.pyplot.plot_date(dates, sent_col)
     plt.title("Sentiment Score over time")
+    
+    # define the buy and sell signals in the plot
+    buy = plt.axhspan(0.5, 1, facecolor='#deffe8', edgecolor = '#00691f', label='test') 
+    sell = plt.axhspan(-0.5, -1, facecolor='#ffdbdb', edgecolor = '#ad3232')
+    
+    plt.legend([buy, sell], ["Good Sentiment (buy signal)", "Bad Sentiment (sell signal)"], loc=9)
+    
     plt.savefig('data/sentiment_dev.png')
 
 
@@ -106,7 +122,7 @@ def clean_twitter():
     df['date'] = pd.to_datetime(df['date'])
 
     df['text_clean'] = clean_texts(df['text'])
-    df['polarity'], df['sent'] = get_sentiment(df['text_clean'])
+    df['polarity'], df['sent'] = get_sentiment(df[['date','text_clean']])
 
     df = df[df['sent'] != 0]
 
@@ -124,13 +140,6 @@ def clean_twitter():
     # pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
     plot_wordcloud(df['text_clean'])
     
-    
     # plot_sentiment_dist(df['sent'])
-    plot_sentiment_dev(df['sent'], df['date'])
+    plot_sentiment_dev(df['polarity'], df['date'])
 
-
-
-
-# %% Run file
-# if __name__ == '__main__':
-#     main()
