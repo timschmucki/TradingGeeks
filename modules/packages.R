@@ -2,6 +2,7 @@
 # Load Libraries ------------------------------------------------
 # --------------------------------------------------------------
 library(dplyr) #for dataframe manipulation
+library(stopwords) #for the cleaning py file to remove stopwords from text data
 library(shiny) # to build interactive web apps straight from R
 library(quantmod) # for quantitative financial modelling
 library(PerformanceAnalytics) # economic tool for performance analysis
@@ -10,4 +11,11 @@ library(shinycssloaders) #for loader of plots
 library(shinyjs) #for hidden button of twitter
 library(shinybusy) #run busy spinner while executing python
 library(reticulate)#to run python code from R
+
+
+
+
+
+
+
 

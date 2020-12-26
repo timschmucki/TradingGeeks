@@ -4,25 +4,6 @@
 
 server <- function(input, output){
   
-  #load the python environment and the script code
-  # py_install("openpyxl")
-  # py_install("tweepy")
-  # py_install('matplotlib')
-  # py_install('seaborn')
-  # py_install('wordcloud')
-  # py_install('textblob')
-  # py_install('xlrd')
-  # py_install('nltk')
-  
-  
-  # # install r_anaconda from github
-  # remotes::install_github("hafen/rminiconda") # install.packages("remotes") # if not installed
-  
-  # reticulate::use_virtualenv('python35_env',required = TRUE) #define python version
-  reticulate::source_python('modules/scraper.py')
-  reticulate::source_python('modules/cleaner.py')
-  
-  
   
   # First, the stock data is retrieved from Yahoo based on the user input and stored in reactive
   yahoo_data <- reactive({
@@ -400,8 +381,56 @@ server <- function(input, output){
   
   
   
-  #observe twitter button and trigger python script to execute
+  #show modal spinner to load python dependencies
   observeEvent(input$twitter ,{
+    
+    # check if python is available if executed on shiny io server otherwise set up venv
+    # if script is run on local host then do not install python 
+    if (Sys.info()[['user']] == 'shiny'){
+      
+      # if python is already installed on server then do not execute this
+      if (!py_available()){
+        
+        show_modal_spinner(
+          spin = "semipolar",
+          color = "#3776ab",
+          text = "The first time you load this page Python virtual environment needs to be set up (this can take up to a few minutes)."
+        )
+        
+        
+        # Define any Python packages needed for the app here:
+        PYTHON_DEPENDENCIES = c('openpyxl','tweepy','matplotlib','seaborn','wordcloud','textblob','xlrd','nltk')
+        
+        # ------------------ App virtualenv setup (Do not edit) ------------------- #
+        
+        virtualenv_dir = Sys.getenv('VIRTUALENV_NAME')
+        python_path = Sys.getenv('PYTHON_PATH')
+        
+        # Create virtual env and install dependencies
+        reticulate::virtualenv_create(envname = virtualenv_dir, python = python_path)
+        reticulate::virtualenv_install(virtualenv_dir, packages = PYTHON_DEPENDENCIES, ignore_installed=TRUE)
+        reticulate::use_virtualenv(virtualenv_dir, required = TRUE)
+    
+      }
+    }
+    
+    #load the python environment and the script code
+    # py_install("openpyxl")
+    # py_install("tweepy")
+    # py_install('matplotlib')
+    # py_install('seaborn')
+    # py_install('wordcloud')
+    # py_install('textblob')
+    # py_install('xlrd')
+    # py_install('nltk')
+    
+    
+    # # install r_anaconda from github
+    # remotes::install_github("hafen/rminiconda") # install.packages("remotes") # if not installed
+    
+    # reticulate::use_virtualenv('python35_env',required = TRUE) #define python version
+    reticulate::source_python('modules/scraper.py')
+    reticulate::source_python('modules/cleaner.py')
 
     start_date <- format(input$dates[1], '%d-%m-%Y')
     end_date <- format(input$dates[2], '%d-%m-%Y')
