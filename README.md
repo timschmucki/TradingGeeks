@@ -4,6 +4,9 @@ The goal of this repository is to develop a program which can backtest trading s
 Test 1: This is a test to check whether the intersection between RStudio and GitHub works.
 Test 2: This is another test to check whether the intersection between RStudio and GitHub works.
 
+[text here](data/overview_repository.svg)
+
+
 ### App is deployed under:
 - [Trading Strategy Backtesting App](https://jan-scheidegger.shinyapps.io/TradingStrategyBacktesting/)
 
