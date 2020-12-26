@@ -6,7 +6,6 @@ Test 2: This is another test to check whether the intersection between RStudio a
 
 ![Overview Repository Structure](data/overview_repository.png)
 
-<a href="http://jgraph.github.io/drawio-github/edit-diagram.html" target="_blank">edit-diagram.html</a>
 
 
 ### App is deployed under:
