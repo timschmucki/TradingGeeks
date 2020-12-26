@@ -10,11 +10,11 @@ Test 2: This is another test to check whether the intersection between RStudio a
 ### Docker instruction:
 Install Docker and enter the following into the command line:
 
-- Pull Request
+- Pull Request\
 docker pull jan4j/trading_strategy_backtesting:latest
 
-- Run
+- Run\
 docker run --rm   -p 28787:8787   -e DISABLE_AUTH=true   jan4j/trading_strategy_backtesting:latest
 
-- Start Local Host
+- Start Local Host\
 open browser and url: http://localhost:28787/
