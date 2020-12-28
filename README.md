@@ -22,3 +22,7 @@ docker run --rm   -p 28787:8787   -e DISABLE_AUTH=true   jan4j/trading_strategy_
 
 - Start Local Host\
 open browser and url: http://localhost:28787/
+
+### Objective of the App
+
+Our application has 3 main objectives. First, the trading program assists a user in analysing a stock by means of different chart types and technical indicators for a specified period. Second, the application enables the back-testing of 6 simple trading strategies and depicts their respective performances. Lastly, the ultimate purpose of the app is to facilitate the analysis of stocks and trading strategies for a broad audience. A well-arranged user interface is the foundation to achieve that, and it makes it easy to experiment with different financial securities, technical indicators, and trading strategies.
