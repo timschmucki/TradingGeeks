@@ -85,6 +85,13 @@ server <- function(input, output){
                of the selected stock in the specified date range (more likely for shorter periods).")
       }
       
+      else if (input$strategy == "strategy6") { # displays description for strategy 6
+        paste ("<b>Description Strategy 6:</b> The Twitter Indicator strategy creates a buy signal when the economic sentiment
+               is well and a sell signal when the economic sentiment is bad. To create the signal, the program
+               deploys a sentiment analysis with the twitter account of the Konjunkturforschungsstelle ETH Zürich. If the
+               polarity score is > 0.5, a buy signal is created, if it is < -0.5, a sell signal arises.")
+      }
+      
     }) # closing brackets render Text
     
     output$strategyplots <- renderPlot({ # Server function for chart 2 which visualizes the performance of the trading strategy
