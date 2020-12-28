@@ -339,6 +339,13 @@ server <- function(input, output){
       # Strategy 6 Twitter indicator strategy taken from python
       if (input$strategy == "strategy6"){
         
+        #####################################
+        ### Strategy 6: Twitter Indicator ###
+        #####################################
+        # EXPLANATION:
+        # Buy signal if polarity score > 0.5
+        # Sell signal if polarity score < -0.5
+        
         #load the signals from twitter data
         df <- read.table('data/twitter_signals.csv', 
                          header = TRUE,
