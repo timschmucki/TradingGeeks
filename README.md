@@ -39,22 +39,22 @@ If the user applies one of the six presented indicators, the stock chart in the 
 
 **Fifth**, the user can choose between six different trading strategies:
 
-#### Strategy 1: Simple Filter Buy
+##### Strategy 1: Simple Filter Buy
 The Simple Filter Buy strategy creates a buy signal when the price of a security increases compared to yesterday's price. The buy signal is Pt / Pt-1 > 1 + x, where Pt is the closing price at time t and x > 0 is the threshold. For this strategy, a threshold of 0.1% has been chosen. The strategy is based on day-trading, meaning that the stock is bought at open and sold at close.
 
-#### Strategy 2: Simple Filter Buy & Sell
+##### Strategy 2: Simple Filter Buy & Sell
 The Simple Filter Buy & Sell strategy creates buy and sell signals when the price of a security increases or decreases compared to yesterday's price. The buy signal is Pt / Pt-1 > 1 + x and the sell signal is Pt / Pt-1 < 1 - x, where Pt is the closing price at time t and and x is the threshold. For this strategy, a threshold of 0.1% has been chosen.
 
-#### Strategy 3: Simple Filter Buy & RSI Sell
+##### Strategy 3: Simple Filter Buy & RSI Sell
 The Simple Filter Buy & RSI Sell strategy creates a buy signal when the price of a security increases compared to yesterday's price. The buy signal is Pt / Pt-1 > 1 + x, where Pt is the closing price at time t and x > 0 is the threshold. For this strategy, a threshold of 0.1% has been chosen. The sell signal arises when RSI > 70.
 
-#### Strategy 4: RSI Buy & Sell
+##### Strategy 4: RSI Buy & Sell
 The RSI Buy & Sell strategy creates a buy signal if RSI < 30 and a sell signal if RSI > 70. Note that the programme will display an error message if the RSI of the selected stock in the specified date range was never below 30 (more likely for shorter periods).
 
-#### Strategy 5: EMA Buy & RSI Sell
+##### Strategy 5: EMA Buy & RSI Sell
 The EMA Buy & RSI Sell strategy creates a buy signal when the short-term EMA (10 days) crosses above the long-term EMA (50 days). The sell signal is generated when RSI > 70. Note that the programme will display an error message if the short-term EMA never crosses the long-term EMA of the selected stock in the specified date range (more likely for shorter periods).
 
-#### Strategy 6: Twitter Indicator
+##### Strategy 6: Twitter Indicator
 The Twitter Indicator strategy creates a buy signal when the economic sentiment is well and a sell signal when the economic sentiment is bad. To create the signal, the program deploys a sentiment analysis with the twitter account of the Konjunkturforschungsstelle ETH Zürich. If the polarity score is > 0.5, a buy signal is created, if it is < -0.5, a sell signal arises.
 
 In this example, strategy 1 has been selected. Once the user hits the submit button, the selected trading strategy is explained between the two charts in the output section of the application.
