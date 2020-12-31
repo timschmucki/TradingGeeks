@@ -59,36 +59,36 @@ server <- function(input, output){
       }
       
       else if (input$strategy == "strategy2"){ # displays description for strategy 2
-        paste ("<b>Description Strategy 2:</b> The Simple Filter Buy & Sell strategy creates buy and sell signals
+        paste("<b>Description Strategy 2:</b> The Simple Filter Buy & Sell strategy creates buy and sell signals
                when the price of a security increases or decreases compared to yesterday's price. The buy signal is
                Pt / Pt-1 > 1 + x and the sell signal is Pt / Pt-1 < 1 - x, where Pt is the closing price at time t and
                and x is the threshold. For this strategy, a threshold of 0.1% has been chosen.")
       }
       
       else if (input$strategy == "strategy3"){ # displays description for strategy 3
-        paste ("<b>Description Strategy 3:</b> The Simple Filter Buy & RSI Sell strategy creates a buy signal
+        paste("<b>Description Strategy 3:</b> The Simple Filter Buy & RSI Sell strategy creates a buy signal
                when the price of a security increases compared to yesterday's price. The buy signal is Pt / Pt-1 > 1 + x,
                where Pt is the closing price at time t and x > 0 is the threshold. For this strategy,
                a threshold of 0.1% has been chosen. The sell signal arises when RSI > 70.")
       }
       
       else if (input$strategy == "strategy4"){ # displays description for strategy 4
-        paste ("<b>Description Strategy 4:</b> The RSI Buy & Sell strategy creates a buy signal if RSI < 30 and
+        paste("<b>Description Strategy 4:</b> The RSI Buy & Sell strategy creates a buy signal if RSI < 30 and
                a sell signal if RSI > 70. Note that the programme will display an error message if the RSI of the 
                selected stock in the specified date range was never below 30 (more likely for shorter periods).")
       }
       
       else if (input$strategy == "strategy5"){ # displays description for strategy 5
-        paste ("<b>Description Strategy 5:</b> The EMA Buy & RSI Sell strategy creates a buy signal when the short-term
+        paste("<b>Description Strategy 5:</b> The EMA Buy & RSI Sell strategy creates a buy signal when the short-term
                EMA (10 days) crosses above the long-term EMA (50 days). The sell signal is generated when RSI > 70.
                Note that the programme will display an error message if the short-term EMA never crosses the long-term EMA
                of the selected stock in the specified date range (more likely for shorter periods).")
       }
       
       else if (input$strategy == "strategy6") { # displays description for strategy 6
-        paste ("<b>Description Strategy 6:</b> The Twitter Indicator strategy creates a buy signal when the economic sentiment
+        paste("<b>Description Strategy 6:</b> The Twitter Indicator strategy creates a buy signal when the economic sentiment
                is well and a sell signal when the economic sentiment is bad. To create the signal, the program
-               deploys a sentiment analysis with the twitter account of the Konjunkturforschungsstelle ETH Zürich. If the
+               deploys a sentiment analysis with the twitter account of the Konjunkturforschungsstelle ETH Z?rich. If the
                polarity score is > 0.5, a buy signal is created, if it is < -0.5, a sell signal arises.")
       }
       
